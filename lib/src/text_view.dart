@@ -64,8 +64,8 @@ class RichTextView extends StatefulWidget {
     this.maxLines,
     this.onTap,
     this.onMore,
-    this.viewMoreText = 'more',
-    this.viewLessText,
+    this.viewMoreText = 'More',
+    this.viewLessText = 'Less',
     this.selectable = false,
     this.boldStyle,
     this.onHashTagClicked,
@@ -137,7 +137,7 @@ class _RichTextViewState extends State<RichTextView> {
         ? TextSpan()
         : TextSpan(
             children: [
-              TextSpan(text: ' \u2026'),
+                TextSpan(text: ' '),
               TextSpan(
                   text: _expanded ? widget.viewLessText : widget.viewMoreText,
                   recognizer: TapGestureRecognizer()
