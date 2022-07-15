@@ -130,7 +130,10 @@ class _RichTextViewState extends State<RichTextView> {
   @override
   Widget build(BuildContext context) {
     var _style = widget.style ?? Theme.of(context).textTheme.bodyText2;
-    var link = _expanded && widget.viewLessText == null
+    var link = TextSpan();
+
+    if (widget.toggleTruncate) {
+      link = _expanded && widget.viewLessText == null
         ? TextSpan()
         : TextSpan(
             children: [
@@ -146,6 +149,7 @@ class _RichTextViewState extends State<RichTextView> {
             ],
             style: linkStyle,
           );
+    }
 
     List<InlineSpan> parseText(String txt) {
       var newString = txt;
@@ -153,25 +157,19 @@ class _RichTextViewState extends State<RichTextView> {
       var _mapping = <String, MatchText>{};
 
       parse.forEach((e) {
-        if (e.type == ParsedType.EMAIL &&
-            widget.supportedTypes.contains(ParsedType.EMAIL)) {
+        if (e.type == ParsedType.EMAIL && widget.supportedTypes.contains(ParsedType.EMAIL)) {
           _mapping[RTUtils.emailPattern] = e;
-        } else if (e.type == ParsedType.PHONE &&
-            widget.supportedTypes.contains(ParsedType.PHONE)) {
+        } else if (e.type == ParsedType.PHONE && widget.supportedTypes.contains(ParsedType.PHONE)) {
           _mapping[RTUtils.phonePattern] = e;
-        } else if (e.type == ParsedType.URL &&
-            widget.supportedTypes.contains(ParsedType.URL)) {
+        } else if (e.type == ParsedType.URL && widget.supportedTypes.contains(ParsedType.URL)) {
           _mapping[RTUtils.urlPattern] = e;
-        } else if (e.type == ParsedType.BOLD &&
-            widget.supportedTypes.contains(ParsedType.BOLD)) {
+        } else if (e.type == ParsedType.BOLD && widget.supportedTypes.contains(ParsedType.BOLD)) {
           _mapping[RTUtils.boldPattern] = e
-            ..style = widget.boldStyle ??
-                _style?.copyWith(fontWeight: FontWeight.bold);
+            ..style = widget.boldStyle ?? _style?.copyWith(fontWeight: FontWeight.bold);
         } else if (e.type == ParsedType.MENTION &&
             widget.supportedTypes.contains(ParsedType.MENTION)) {
           _mapping[RTUtils.mentionPattern] = e;
-        } else if (e.type == ParsedType.HASH &&
-            widget.supportedTypes.contains(ParsedType.HASH)) {
+        } else if (e.type == ParsedType.HASH && widget.supportedTypes.contains(ParsedType.HASH)) {
           _mapping[RTUtils.hashPattern] = e;
         }
       });
@@ -209,21 +207,19 @@ class _RichTextViewState extends State<RichTextView> {
 
           if (mapping != null) {
             if (mapping.renderText != null) {
-              var result = Map<String, String>.from(
-                  mapping.renderText!(str: matchText, pattern: pattern));
+              var result =
+                  Map<String, String>.from(mapping.renderText!(str: matchText, pattern: pattern));
 
               span = TextSpan(
                 text: "${result['display']}",
                 style: mapping.style ?? linkStyle,
-                recognizer: TapGestureRecognizer()
-                  ..onTap = () => mapping.onTap!(matchText),
+                recognizer: TapGestureRecognizer()..onTap = () => mapping.onTap!(matchText),
               );
             } else {
               span = TextSpan(
                 text: '$matchText',
                 style: mapping.style ?? linkStyle,
-                recognizer: TapGestureRecognizer()
-                  ..onTap = () => mapping.onTap!(matchText),
+                recognizer: TapGestureRecognizer()..onTap = () => mapping.onTap!(matchText),
               );
             }
           } else {
